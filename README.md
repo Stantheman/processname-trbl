@@ -5,8 +5,10 @@ this gets the information contained in /proc/pid/cmdline, which is what ps uses 
 
 When a process is loaded into memory for execution, the filename, environment, and argv are saved at the bottom new process's stack.
 
-/proc gives you a read-only copy of the process's data, and a map that tells you where the stack is :). Here's STDERR from a run:
+/proc gives you a read-only copy of the process's data, and a map that tells you where the stack is :). 
 
+example stderr
+--------
  - Getting position of the stack from /proc/8342/maps
  
  - Found the hex range ffd02000-ffd23000, converted to decimal range 4291829760-4291964928
@@ -26,3 +28,14 @@ When a process is loaded into memory for execution, the filename, environment, a
  - Getting the invocation by going backwards until two nulls happen in a row
  
  - The invocation is 35 bytes long. Replacing nulls with spaces
+
+other stuff
+----
+
+Some files don't have stack entries, but only have thread stack entries. Need to investigate that more
+
+The kernel source specifies the offset from the bottom of the stack to essentially be (the bottom - sizeof(void\*)). I don't know why they subtract the space for the pointer. Maybe it's used in a special marking way somewhere else?
+
+It would be neat to parse /proc/kcore somehow (get the offsets? is it possible?)
+
+I don't believe this works for a.out files, need to verify/check the kernel source
