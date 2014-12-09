@@ -82,6 +82,8 @@ func get_stack_positions(pid string) (uint64, uint64, error) {
 	return start_dec, end_dec, nil
 }
 
+// get_process_name takes advantage of elf binary loading getting process information
+// stuffed at the bottom of the stack at process invocation
 func get_process_name(pid string, start, stop uint64) (string, error) {
 
 	logp("Grabbing the stack from /proc/%s/mem, from %v up to %v", pid, start, stop)
@@ -102,9 +104,10 @@ func get_process_name(pid string, start, stop uint64) (string, error) {
 	logp("Skipping the last nine bytes since they're nulls")
 
 	// last 9 bytes are null because the bottom of the stack is backed up by sizeof void*, plus ending null of interp string
+	// TODO: should uname -m bits to decide between 8 and 4 sizeof void *
 	buf = buf[:len(buf)-9]
 
-	// interp is first
+	// filename is first, take everything after the last null
 	interp_idx := bytes.LastIndex(buf, []byte{'\x00'})
 	interp := buf[interp_idx+1:]
 	logp("Got the interpreter, it's %s. Moving onto the environment", interp)
@@ -138,6 +141,7 @@ func get_process_name(pid string, start, stop uint64) (string, error) {
 	return string(invoc), nil
 }
 
+// get_env_offset returns the size of the environment so we know how much to skip up the stack
 func get_env_offset(pid string) (int, error) {
 	logp("Getting the length of the environment of pid %v by checking /proc/%v/environ", pid, pid)
 	fh, err := os.Open("/proc/" + pid + "/environ")
