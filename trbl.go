@@ -68,11 +68,11 @@ func get_stack_positions(pid string) (uint64, uint64, error) {
 	end_hex := stack_line[hyphen+1 : space]
 
 	// convert hex to dec
-	start_dec, err := strconv.ParseUint(start_hex, 16, 32)
+	start_dec, err := strconv.ParseUint(start_hex, 16, 64)
 	if err != nil {
 		return 0, 0, err
 	}
-	end_dec, err := strconv.ParseUint(end_hex, 16, 32)
+	end_dec, err := strconv.ParseUint(end_hex, 16, 64)
 	if err != nil {
 		return 0, 0, err
 	}
