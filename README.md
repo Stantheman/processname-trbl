@@ -39,3 +39,5 @@ The kernel source specifies the offset from the bottom of the stack to essential
 It would be neat to parse /proc/kcore somehow (get the offsets? is it possible?)
 
 I don't believe this works for a.out files, need to verify/check the kernel source
+
+I should be ptrace-attaching before reading /mem
